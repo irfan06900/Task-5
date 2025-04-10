@@ -1,0 +1,129 @@
+import java.util.*;
+
+class Student {
+    String studentId;
+    String name;
+    String gender;
+    String assignedRoom;
+
+    Student(String studentId, String name, String gender) {
+        this.studentId = studentId;
+        this.name = name;
+        this.gender = gender;
+        this.assignedRoom = null;
+    }
+}
+
+class Room {
+    String roomNumber;
+    int capacity;
+    List<Student> occupants = new ArrayList<>();
+
+    Room(String roomNumber, int capacity) {
+        this.roomNumber = roomNumber;
+        this.capacity = capacity;
+    }
+
+    boolean assignStudent(Student student) {
+        if (occupants.size() < capacity) {
+            occupants.add(student);
+            student.assignedRoom = roomNumber;
+            return true;
+        }
+        return false;
+    }
+}
+
+public class DormitoryManagementSystem {
+    static Map<String, Student> students = new HashMap<>();
+    static Map<String, Room> rooms = new HashMap<>();
+    static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        while (true) {
+            System.out.println("\n--- Dormitory Management Menu ---");
+            System.out.println("1. Add Student");
+            System.out.println("2. Add Room");
+            System.out.println("3. Assign Student to Room");
+            System.out.println("4. View All Students");
+            System.out.println("5. View All Rooms");
+            System.out.println("6. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt(); scanner.nextLine();
+
+            switch (choice) {
+                case 1 -> addStudent();
+                case 2 -> addRoom();
+                case 3 -> assignRoom();
+                case 4 -> viewStudents();
+                case 5 -> viewRooms();
+                case 6 -> System.exit(0);
+                default -> System.out.println("Invalid option.");
+            }
+        }
+    }
+
+    static void addStudent() {
+        System.out.print("Enter Student ID: ");
+        String id = scanner.nextLine();
+        System.out.print("Enter Name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter Gender: ");
+        String gender = scanner.nextLine();
+        students.put(id, new Student(id, name, gender));
+        System.out.println("Student added.");
+    }
+
+    static void addRoom() {
+        System.out.print("Enter Room Number: ");
+        String roomNo = scanner.nextLine();
+        System.out.print("Enter Capacity: ");
+        int capacity = scanner.nextInt(); scanner.nextLine();
+        rooms.put(roomNo, new Room(roomNo, capacity));
+        System.out.println("Room added.");
+    }
+
+    static void assignRoom() {
+        System.out.print("Enter Student ID: ");
+        String studentId = scanner.nextLine();
+        Student student = students.get(studentId);
+        if (student == null) {
+            System.out.println("Student not found.");
+            return;
+        }
+
+        System.out.print("Enter Room Number: ");
+        String roomNo = scanner.nextLine();
+        Room room = rooms.get(roomNo);
+        if (room == null) {
+            System.out.println("Room not found.");
+            return;
+        }
+
+        if (room.assignStudent(student)) {
+            System.out.println("Student assigned to room.");
+        } else {
+            System.out.println("Room is full.");
+        }
+    }
+
+    static void viewStudents() {
+        if (students.isEmpty()) {
+            System.out.println("No students found.");
+            return;
+        }
+        for (Student s : students.values()) {
+            System.out.println(s.studentId + " - " + s.name + " - " + s.gender + " - Room: " + (s.assignedRoom != null ? s.assignedRoom : "Not Assigned"));
+        }
+    }
+
+    static void viewRooms() {
+        if (rooms.isEmpty()) {
+            System.out.println("No rooms found.");
+            return;
+        }
+        for (Room r : rooms.values()) {
+            System.out.println("Room " + r.roomNumber + " (Capacity: " + r.capacity + ", Occupied: " + r.occupants.size() + ")");
+        }
+    }
+}
